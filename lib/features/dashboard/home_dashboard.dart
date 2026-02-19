@@ -1,62 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:percent_indicator/percent_indicator.dart';
+import 'widgets/daily_progress_ring.dart'; // Importing your new component!
 
 class HomeDashboardScreen extends StatelessWidget {
   const HomeDashboardScreen({super.key});
 
-  // Mock data for the prototype
-  final int currentSteps = 4250; 
-  final int goalSteps = 10000;   
-
   @override
   Widget build(BuildContext context) {
-    double percent = currentSteps / goalSteps;
-    if (percent > 1.0) percent = 1.0;
+    // Fake data to test the ring
+    const int todaySteps = 6430;
+    const int dailyGoal = 10000;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.push('/settings'),
-          )
-        ],
+        title: const Text('GoGo Dashboard'),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularPercentIndicator(
-              radius: 120.0,
-              lineWidth: 15.0,
-              percent: percent,
-              center: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.directions_run, size: 40, color: Colors.green),
-                  Text(
-                    "$currentSteps",
-                    style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                  ),
-                  const Text("Steps", style: TextStyle(fontSize: 18, color: Colors.grey)),
-                ],
-              ),
-              progressColor: Colors.green,
-              backgroundColor: Colors.green.shade100,
-              circularStrokeCap: CircularStrokeCap.round,
+            
+            // TESTING THE COMPLEX COMPONENT
+            const DailyProgressRing(
+              currentSteps: todaySteps,
+              goalSteps: dailyGoal,
             ),
+            
             const SizedBox(height: 40),
-            Text(
-              "Goal: $goalSteps steps",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/history'),
-              icon: const Icon(Icons.history),
-              label: const Text("View History"),
+            
+            const Text(
+              "Goal: $dailyGoal steps",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
             ),
           ],
         ),
