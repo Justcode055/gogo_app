@@ -1,5 +1,5 @@
 # GoGo App v2
-
+# johnny 
 Lightweight step-tracking prototype with onboarding, dashboard, history, goal setting, and settings flows built in Flutter.
 
 ## Features
