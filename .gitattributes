@@ -1,0 +1,9 @@
+* text=auto
+
+# Keep Flutter/Dart/Kotlin/Swift/CMake sources as LF
+*.dart text eol=lf
+*.kt text eol=lf
+*.kts text eol=lf
+*.swift text eol=lf
+*.cc text eol=lf
+*.cmake text eol=lf
