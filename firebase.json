@@ -1,16 +1,68 @@
 {
-  "hosting": {
-    "public": "build/web",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  }
+	"hosting": {
+		"public": "build/web",
+		"ignore": [
+			"firebase.json",
+			"**/.*",
+			"**/node_modules/**"
+		],
+		"headers": [
+			{
+				"source": "/index.html",
+				"headers": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache"
+					}
+				]
+			},
+			{
+				"source": "/flutter_service_worker.js",
+				"headers": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache"
+					}
+				]
+			},
+			{
+				"source": "/version.json",
+				"headers": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache"
+					}
+				]
+			}
+		],
+		"rewrites": [
+			{
+				"source": "**",
+				"destination": "/index.html"
+			}
+		]
+	},
+	"flutter": {
+		"platforms": {
+			"android": {
+				"default": {
+					"projectId": "gogo-3055",
+					"appId": "1:341963901485:android:fc18de9e0d8e404824c6a4",
+					"fileOutput": "android/app/google-services.json"
+				}
+			},
+			"dart": {
+				"lib/firebase_options.dart": {
+					"projectId": "gogo-3055",
+					"configurations": {
+						"android": "1:341963901485:android:fc18de9e0d8e404824c6a4",
+						"ios": "1:341963901485:ios:1a2189e7f8e738fc24c6a4",
+						"macos": "1:341963901485:ios:1a2189e7f8e738fc24c6a4",
+						"web": "1:341963901485:web:e48fc87d3287ed3b24c6a4",
+						"windows": "1:341963901485:web:97930dcbc389f52224c6a4"
+					}
+				}
+			}
+		}
+	}
 }

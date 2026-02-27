@@ -42,3 +42,11 @@ Lightweight step-tracking prototype with onboarding, dashboard, history, goal se
 - Format Dart: `dart format lib test`
 - Analyze: `flutter analyze`
 - Update deps: `flutter pub upgrade --major-versions`
+
+## Firebase Deploy Checklist
+1) Confirm active project: `firebase use`
+2) Ensure dependencies: `flutter pub get`
+3) Build web bundle: `flutter build web`
+4) Deploy hosting: `firebase deploy --only hosting`
+5) Verify live URL: `https://gogo-3055.web.app`
+6) If users see a white screen after deploy, do a hard refresh (`Ctrl+Shift+R`) to clear cached assets.

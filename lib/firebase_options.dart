@@ -26,56 +26,61 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ---- Web ----
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_WEB_SENDER_ID',
-    projectId: 'YOUR_WEB_PROJECT_ID',
-    authDomain: 'YOUR_WEB_AUTH_DOMAIN',
-    storageBucket: 'YOUR_WEB_STORAGE_BUCKET',
-    measurementId: 'YOUR_WEB_MEASUREMENT_ID',
+    apiKey: 'AIzaSyDx8glQQSg43Dqy2okQ4p3h5gTYIS7Fi48',
+    appId: '1:341963901485:web:e48fc87d3287ed3b24c6a4',
+    messagingSenderId: '341963901485',
+    projectId: 'gogo-3055',
+    authDomain: 'gogo-3055.firebaseapp.com',
+    storageBucket: 'gogo-3055.firebasestorage.app',
+    measurementId: 'G-FXR32YKV0J',
+  );
+
+  // ---- Web ----
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAc0MBg9_O3sK3vBl12WhijFFVs-Uu__BY',
+    appId: '1:341963901485:android:fc18de9e0d8e404824c6a4',
+    messagingSenderId: '341963901485',
+    projectId: 'gogo-3055',
+    storageBucket: 'gogo-3055.firebasestorage.app',
   );
 
   // ---- Android ----
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_ANDROID_SENDER_ID',
-    projectId: 'YOUR_ANDROID_PROJECT_ID',
-    storageBucket: 'YOUR_ANDROID_STORAGE_BUCKET',
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBfunvA3xtQVQS5DVkSEe2XLGqgcXWU6SQ',
+    appId: '1:341963901485:ios:1a2189e7f8e738fc24c6a4',
+    messagingSenderId: '341963901485',
+    projectId: 'gogo-3055',
+    storageBucket: 'gogo-3055.firebasestorage.app',
+    iosBundleId: 'com.example.gogoAppV2',
   );
 
   // ---- iOS ----
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_IOS_SENDER_ID',
-    projectId: 'YOUR_IOS_PROJECT_ID',
-    storageBucket: 'YOUR_IOS_STORAGE_BUCKET',
-    iosClientId: 'YOUR_IOS_CLIENT_ID',
-    iosBundleId: 'com.example.app',
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBfunvA3xtQVQS5DVkSEe2XLGqgcXWU6SQ',
+    appId: '1:341963901485:ios:1a2189e7f8e738fc24c6a4',
+    messagingSenderId: '341963901485',
+    projectId: 'gogo-3055',
+    storageBucket: 'gogo-3055.firebasestorage.app',
+    iosBundleId: 'com.example.gogoAppV2',
   );
 
   // ---- macOS ----
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_MACOS_API_KEY',
-    appId: 'YOUR_MACOS_APP_ID',
-    messagingSenderId: 'YOUR_MACOS_SENDER_ID',
-    projectId: 'YOUR_MACOS_PROJECT_ID',
-    storageBucket: 'YOUR_MACOS_STORAGE_BUCKET',
-    iosClientId: 'YOUR_MACOS_CLIENT_ID',
-    iosBundleId: 'com.example.app',
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDx8glQQSg43Dqy2okQ4p3h5gTYIS7Fi48',
+    appId: '1:341963901485:web:97930dcbc389f52224c6a4',
+    messagingSenderId: '341963901485',
+    projectId: 'gogo-3055',
+    authDomain: 'gogo-3055.firebaseapp.com',
+    storageBucket: 'gogo-3055.firebasestorage.app',
+    measurementId: 'G-8FRR5YTJLM',
   );
 
   // ---- Windows ----
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'YOUR_WINDOWS_API_KEY',
-    appId: 'YOUR_WINDOWS_APP_ID',
-    messagingSenderId: 'YOUR_WINDOWS_SENDER_ID',
-    projectId: 'YOUR_WINDOWS_PROJECT_ID',
-    storageBucket: 'YOUR_WINDOWS_STORAGE_BUCKET',
-  );
 
   // ---- Linux ----
   static const FirebaseOptions linux = FirebaseOptions(
