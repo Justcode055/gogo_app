@@ -56,6 +56,13 @@ class AppState extends ChangeNotifier {
   // ── Today's steps ─────────────────────────────────────
   int get todaySteps => StepService.instance.stepsToday;
   bool get stepsAvailable => StepService.instance.isAvailable;
+  bool get canRequestStepPermission => StepService.instance.canRequestPermission;
+
+  Future<bool> requestStepPermission() async {
+    final granted = await StepService.instance.requestPermissionAndStart();
+    notifyListeners();
+    return granted;
+  }
 
   // ── Goal ──────────────────────────────────────────────
   Future<void> updateGoal(int goal) async {
@@ -80,10 +87,8 @@ class AppState extends ChangeNotifier {
 
   // ── Save today progress on app pause ─────────────────
   Future<void> saveSession() async {
-    await _storage.saveTodayBase(
-        StepService.instance.stepsToday == 0
-            ? await _storage.getTodayBase()
-            : todaySteps);
+    final base = StepService.instance.baseSteps;
+    await _storage.saveTodayBase(base == 0 ? await _storage.getTodayBase() : base);
     await _storage.saveTodayDate(_todayString());
   }
 

@@ -143,6 +143,26 @@ class HomeDashboardScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (AppState.instance.canRequestStepPermission) ...[
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final granted = await AppState.instance.requestStepPermission();
+                            if (context.mounted && !granted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Permission is required to count steps.'),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.lock_open),
+                          label: const Text('Allow Activity Permission'),
+                        ),
+                      ),
+                    ],
                   ],
                   const SizedBox(height: 24),
                   SizedBox(
