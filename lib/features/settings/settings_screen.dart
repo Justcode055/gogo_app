@@ -1,9 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/app_constants.dart';
 import '../../core/app_state.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final _goalFormKey = GlobalKey<FormState>();
+  late final TextEditingController _goalController;
+
+  @override
+  void initState() {
+    super.initState();
+    _goalController =
+        TextEditingController(text: '${AppState.instance.goalSteps}');
+  }
+
+  @override
+  void dispose() {
+    _goalController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveGoal() async {
+    if (!_goalFormKey.currentState!.validate()) return;
+    final goal = int.parse(_goalController.text.trim());
+    await AppState.instance.updateGoal(goal);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Daily goal updated.')),
+    );
+  }
+
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: const Text('Delete account and data?'),
+              content: const Text(
+                'This will permanently delete your Firestore history and local app data.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+
+    if (!confirmed) return;
+
+    await AppState.instance.deleteAccountAndData();
+    if (!mounted) return;
+    context.go('/');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +75,6 @@ class SettingsScreen extends StatelessWidget {
       listenable: AppState.instance,
       builder: (context, _) {
         final isDark = AppState.instance.isDarkMode;
-        final goal = AppState.instance.goalSteps;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Settings')),
@@ -37,13 +100,77 @@ class SettingsScreen extends StatelessWidget {
               // ── Goal ──────────────────────────────────
               const _SectionHeader(title: 'Step Goal'),
               Card(
-                child: ListTile(
-                  leading:
-                      const Icon(Icons.flag, color: Colors.green),
-                  title: const Text('Daily Step Goal'),
-                  subtitle: Text('$goal steps per day'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => context.push('/goals'),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Form(
+                    key: _goalFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Daily Step Goal',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _goalController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter step goal',
+                            suffixText: 'steps',
+                          ),
+                          validator: (value) {
+                            final input = value?.trim() ?? '';
+                            if (!RegExp(r'^\d+$').hasMatch(input)) {
+                              return 'Only numbers are allowed';
+                            }
+                            final goalValue = int.parse(input);
+                            if (goalValue < AppConstants.minDailyGoal) {
+                              return 'Goal must be at least ${AppConstants.minDailyGoal}';
+                            }
+                            if (goalValue > AppConstants.maxDailyGoal) {
+                              return 'Goal must be at most ${AppConstants.maxDailyGoal}';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FilledButton(
+                            onPressed: _saveGoal,
+                            child: const Text('Save Goal'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // ── Privacy ───────────────────────────────
+              const _SectionHeader(title: 'Privacy'),
+              Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.verified_user, color: Colors.teal),
+                      title: const Text('Privacy Consent'),
+                      subtitle: Text(
+                        AppState.instance.hasPrivacyConsent
+                            ? 'Consent granted'
+                            : 'Consent not granted',
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.delete_forever, color: Colors.red),
+                      title: const Text('Delete Account & Data'),
+                      subtitle: const Text('Remove all Firestore and local data'),
+                      onTap: _deleteAccount,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),

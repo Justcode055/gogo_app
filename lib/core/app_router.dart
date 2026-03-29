@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'app_state.dart';
+import '../features/landing/landing_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/dashboard/home_dashboard.dart';
 import '../features/history/history_screen.dart';
@@ -11,14 +12,22 @@ final appRouter = GoRouter(
   initialLocation: '/',
   redirect: (context, state) {
     final onboarded = AppState.instance.isOnboarded;
-    final atOnboarding = state.uri.path == '/';
-    if (onboarded && atOnboarding) return '/home/dashboard';
-    if (!onboarded && !atOnboarding) return '/';
+    final path = state.uri.path;
+    final atLanding = path == '/';
+    final atOnboarding = path == '/onboarding';
+    final isPublic = atLanding || atOnboarding;
+
+    if (onboarded && isPublic) return '/home/dashboard';
+    if (!onboarded && !isPublic) return '/';
     return null;
   },
   routes: [
     GoRoute(
       path: '/',
+      builder: (context, state) => const LandingScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
     ),
     StatefulShellRoute.indexedStack(

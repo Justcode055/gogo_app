@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/app_constants.dart';
 import '../models/step_entry.dart';
 
 class StorageService {
@@ -6,6 +7,8 @@ class StorageService {
   static const _darkModeKey = 'dark_mode';
   static const _historyKey = 'step_history';
   static const _onboardedKey = 'onboarded';
+  static const _privacyConsentKey = 'privacy_consent';
+  static const _userIdKey = 'app_user_id';
   static const _todayBaseKey = 'today_base_steps';
   static const _todayDateKey = 'today_date';
 
@@ -14,7 +17,7 @@ class StorageService {
   // ── Goal ──────────────────────────────────────────────
   Future<int> getGoal() async {
     final p = await _prefs;
-    return p.getInt(_goalKey) ?? 10000;
+    return p.getInt(_goalKey) ?? AppConstants.defaultDailyGoal;
   }
 
   Future<void> saveGoal(int goal) async {
@@ -42,6 +45,27 @@ class StorageService {
   Future<void> setOnboarded() async {
     final p = await _prefs;
     await p.setBool(_onboardedKey, true);
+  }
+
+  Future<bool> getPrivacyConsent() async {
+    final p = await _prefs;
+    return p.getBool(_privacyConsentKey) ?? false;
+  }
+
+  Future<void> setPrivacyConsent(bool value) async {
+    final p = await _prefs;
+    await p.setBool(_privacyConsentKey, value);
+  }
+
+  Future<String> getOrCreateUserId() async {
+    final p = await _prefs;
+    final existing = p.getString(_userIdKey);
+    if (existing != null && existing.isNotEmpty) {
+      return existing;
+    }
+    final generated = 'user_${DateTime.now().millisecondsSinceEpoch}';
+    await p.setString(_userIdKey, generated);
+    return generated;
   }
 
   // ── History ───────────────────────────────────────────
@@ -77,5 +101,17 @@ class StorageService {
   Future<void> saveTodayDate(String date) async {
     final p = await _prefs;
     await p.setString(_todayDateKey, date);
+  }
+
+  Future<String> resetForFreshStart() async {
+    final p = await _prefs;
+    await p.clear();
+    final newUserId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+    await p.setString(_userIdKey, newUserId);
+    await p.setInt(_goalKey, AppConstants.defaultDailyGoal);
+    await p.setBool(_darkModeKey, false);
+    await p.setBool(_onboardedKey, false);
+    await p.setBool(_privacyConsentKey, false);
+    return newUserId;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -6,24 +8,59 @@ import 'core/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _initFirebase();
-  await AppState.instance.init();
   runApp(const GoGoApp());
+  unawaited(_bootstrapApp());
 }
 
-Future<void> _initFirebase() async {
+Future<void> _bootstrapApp() async {
+  final firebaseReady = await _initFirebase();
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await AppState.instance.init(cloudEnabled: firebaseReady);
   } catch (err, stack) {
-    debugPrint('Firebase init failed: $err');
+    debugPrint('App init failed: $err');
     debugPrintStack(stackTrace: stack);
   }
 }
 
-class GoGoApp extends StatelessWidget {
+Future<bool> _initFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    return true;
+  } catch (err, stack) {
+    debugPrint('Firebase init failed: $err');
+    debugPrintStack(stackTrace: stack);
+    return false;
+  }
+}
+
+class GoGoApp extends StatefulWidget {
   const GoGoApp({super.key});
+
+  @override
+  State<GoGoApp> createState() => _GoGoAppState();
+}
+
+class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      AppState.instance.saveSession();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

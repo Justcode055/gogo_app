@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/app_constants.dart';
 import '../../core/app_state.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  bool _acceptedPrivacy = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
+      backgroundColor: AppConstants.onboardingDarkBg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -19,18 +27,21 @@ class OnboardingScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppConstants.onboardingSurface,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.green.shade200,
+                      color: const Color(0x5500C896),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
                   ],
                 ),
-                child: const Icon(Icons.directions_walk,
-                    size: 100, color: Colors.green),
+                child: const Icon(
+                  Icons.directions_walk,
+                  size: 100,
+                  color: AppConstants.onboardingAccent,
+                ),
               ),
               const SizedBox(height: 40),
               const Text(
@@ -38,14 +49,34 @@ class OnboardingScreen extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B5E20)),
+                  color: AppConstants.onboardingTextPrimary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               const Text(
                 'Track your daily steps,\nreach your goals, stay healthy.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppConstants.onboardingTextSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              CheckboxListTile(
+                value: _acceptedPrivacy,
+                contentPadding: EdgeInsets.zero,
+                activeColor: AppConstants.onboardingAccent,
+                checkColor: AppConstants.onboardingDarkBg,
+                onChanged: (value) {
+                  setState(() {
+                    _acceptedPrivacy = value ?? false;
+                  });
+                },
+                title: const Text(
+                  'I agree to the Privacy Policy and consent to step data processing.',
+                  style: TextStyle(fontSize: 13, color: Color(0xFFD6E4E2)),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
               ),
               const Spacer(),
               SizedBox(
@@ -53,15 +84,19 @@ class OnboardingScreen extends StatelessWidget {
                 height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppConstants.onboardingAccent,
+                    foregroundColor: AppConstants.onboardingDarkBg,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                   ),
-                  onPressed: () async {
-                    await AppState.instance.completeOnboarding();
+                  onPressed: _acceptedPrivacy
+                      ? () async {
+                    await AppState.instance.completeOnboarding(
+                      consentGiven: _acceptedPrivacy,
+                    );
                     if (context.mounted) context.go('/home/dashboard');
-                  },
+                  }
+                      : null,
                   child: const Text('Get Started',
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold)),

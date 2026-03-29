@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/app_constants.dart';
 import '../../core/app_state.dart';
 
 class GoalSettingScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Preset quick-select options
-  static const _presets = [5000, 7500, 10000, 12000, 15000];
+  static const _presets = AppConstants.goalPresets;
 
   @override
   void initState() {
@@ -63,7 +64,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'The recommended daily goal is 10,000 steps.',
+                  'The recommended daily goal is ${AppConstants.defaultDailyGoal} steps.',
                   style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 24),
@@ -78,10 +79,12 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                   ),
                   validator: (val) {
                     final n = int.tryParse(val?.trim() ?? '');
-                    if (n == null || n < 100) {
-                      return 'Please enter a valid number (min 100)';
+                    if (n == null || n < AppConstants.minDailyGoal) {
+                      return 'Please enter a valid number (min ${AppConstants.minDailyGoal})';
                     }
-                    if (n > 100000) return 'Maximum goal is 100,000';
+                    if (n > AppConstants.maxDailyGoal) {
+                      return 'Maximum goal is ${AppConstants.maxDailyGoal}';
+                    }
                     return null;
                   },
                 ),

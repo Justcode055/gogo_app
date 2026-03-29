@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import '../../core/app_constants.dart';
 import '../../core/app_state.dart';
+import '../../services/step_service.dart';
 
 class HomeDashboardScreen extends StatelessWidget {
   const HomeDashboardScreen({super.key});
@@ -13,7 +15,6 @@ class HomeDashboardScreen extends StatelessWidget {
       builder: (context, _) {
         final steps = AppState.instance.todaySteps;
         final goal = AppState.instance.goalSteps;
-        final percent = (steps / goal).clamp(0.0, 1.0);
         final available = AppState.instance.stepsAvailable;
 
         return Scaffold(
@@ -36,89 +37,105 @@ class HomeDashboardScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 16),
-                  CircularPercentIndicator(
-                    radius: 130.0,
-                    lineWidth: 16.0,
-                    percent: percent,
-                    center: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          available ? '$steps' : '--',
-                          style: const TextStyle(
-                            fontSize: 44,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1B5E20),
-                          ),
-                        ),
-                        const Text(
-                          'steps',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    progressColor: const Color(0xFF50C878),
-                    backgroundColor: Colors.green,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    animation: true,
-                    animateFromLastPercent: true,
+                  StreamBuilder<int>(
+                    stream: StepService.instance.liveStepsStream,
+                    initialData: steps,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final liveSteps = snapshot.data ?? steps;
+                      final safeGoal = goal <= 0 ? 1 : goal;
+                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
+
+                      return DailyProgressRing(
+                        available: available,
+                        steps: liveSteps,
+                        percent: percent,
+                      );
+                    },
                   ),
                   const SizedBox(height: 28),
-                  Row(
-                    children: [
-                      _StatCard(
-                        icon: Icons.my_location,
-                        label: 'Goal',
-                        value: '$goal',
-                        unit: 'steps',
-                        color: Colors.blue,
-                      ),
-                      const SizedBox(width: 12),
-                      _StatCard(
-                        icon: Icons.check_circle_outline,
-                        label: 'Done',
-                        value:
-                            '${(percent * 100).toStringAsFixed(0)}%',
-                        unit: 'of goal',
-                        color: Colors.green,
-                      ),
-                      const SizedBox(width: 12),
-                      _StatCard(
-                        icon: Icons.local_fire_department,
-                        label: 'Calories',
-                        value:
-                            (steps * 0.04).toStringAsFixed(0),
-                        unit: 'kcal',
-                        color: Colors.orange,
-                      ),
-                    ],
+                  StreamBuilder<int>(
+                    stream: StepService.instance.liveStepsStream,
+                    initialData: steps,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final liveSteps = snapshot.data ?? steps;
+                      final safeGoal = goal <= 0 ? 1 : goal;
+                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
+                      return Row(
+                        children: [
+                          _StatCard(
+                            icon: Icons.my_location,
+                            label: 'Goal',
+                            value: '$goal',
+                            unit: 'steps',
+                            color: Colors.blue,
+                          ),
+                          const SizedBox(width: 12),
+                          _StatCard(
+                            icon: Icons.check_circle_outline,
+                            label: 'Done',
+                            value: '${(percent * 100).toStringAsFixed(0)}%',
+                            unit: 'of goal',
+                            color: Colors.green,
+                          ),
+                          const SizedBox(width: 12),
+                          _StatCard(
+                            icon: Icons.local_fire_department,
+                            label: 'Calories',
+                            value: (liveSteps * 0.04).toStringAsFixed(0),
+                            unit: 'kcal',
+                            color: Colors.orange,
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Colors.green.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.emoji_events, color: Colors.amber),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            _motivationalText(percent),
-                            style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500),
+                  StreamBuilder<int>(
+                    stream: StepService.instance.liveStepsStream,
+                    initialData: steps,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final liveSteps = snapshot.data ?? steps;
+                      final safeGoal = goal <= 0 ? 1 : goal;
+                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF39D98A),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: AppConstants.onboardingAccent,
                           ),
                         ),
-                      ],
-                    ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.emoji_events, color: Colors.amber),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                _motivationalText(percent),
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppConstants.onboardingDarkBg),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                   if (!available) ...[
                     const SizedBox(height: 16),
@@ -171,8 +188,13 @@ class HomeDashboardScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => context.go('/home/history'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppConstants.onboardingAccent,
+                        foregroundColor: AppConstants.onboardingDarkBg,
+                        side: const BorderSide(
+                          color: AppConstants.onboardingAccent,
+                          width: 1.2,
+                        ),
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
@@ -221,9 +243,11 @@ class _StatCard extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
+          color: const Color(0xFF39D98A),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: AppConstants.onboardingAccent,
+          ),
         ),
         child: Column(
           children: [
@@ -235,11 +259,71 @@ class _StatCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: color)),
             Text(unit,
-                style: const TextStyle(
-                    fontSize: 11, color: Colors.grey)),
+                style: TextStyle(
+                    fontSize: 11,
+                    color: AppConstants.onboardingDarkBg.withValues(alpha: 0.8))),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DailyProgressRing extends StatelessWidget {
+  final bool available;
+  final int steps;
+  final double percent;
+
+  const DailyProgressRing({
+    super.key,
+    required this.available,
+    required this.steps,
+    required this.percent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CircularPercentIndicator(
+      radius: 130.0,
+      lineWidth: 16.0,
+      percent: percent,
+      center: Container(
+        width: 188,
+        height: 188,
+        decoration: BoxDecoration(
+          color: const Color(0xFF39D98A),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppConstants.onboardingAccent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              available ? '$steps' : '--',
+              style: const TextStyle(
+                fontSize: 44,
+                fontWeight: FontWeight.bold,
+                color: AppConstants.onboardingDarkBg,
+              ),
+            ),
+            Text(
+              'steps',
+              style: TextStyle(
+                  fontSize: 18,
+                  color: AppConstants.onboardingDarkBg.withValues(alpha: 0.8),
+                  fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+      progressColor: AppConstants.onboardingAccent,
+      backgroundColor: const Color(0xFFB8F2D2),
+      circularStrokeCap: CircularStrokeCap.round,
+      animation: true,
+      animateFromLastPercent: true,
     );
   }
 }
