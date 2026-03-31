@@ -91,7 +91,7 @@ class LandingScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 54,
                   child: FilledButton.icon(
-                    onPressed: () => context.go('/onboarding'),
+                    onPressed: () => context.go('/login'),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppConstants.brandGreenDark,
                       shape: RoundedRectangleBorder(
@@ -112,8 +112,8 @@ class LandingScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () => context.go('/onboarding'),
-                    child: const Text('Continue to onboarding'),
+                    onPressed: () => context.go('/login'),
+                    child: const Text('Continue to login'),
                   ),
                 ),
               ],

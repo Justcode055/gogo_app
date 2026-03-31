@@ -13,6 +13,10 @@ class StepService extends ChangeNotifier {
   static final StepService instance = StepService._();
   StepService._();
 
+  static const int _maxExpectedStepsPerSecond = 4;
+  static const int _cloudSyncIntervalSeconds = 3;
+  static const int _cloudSyncStepDelta = 15;
+
   bool _cloudEnabled = false;
 
   int _rawTotal = 0;   // cumulative from pedometer (since last boot)
@@ -26,6 +30,10 @@ class StepService extends ChangeNotifier {
   bool _pendingInitialRollover = false;
   int _pendingSavedBase = 0;
   String _pendingSavedDate = '';
+  DateTime? _lastSensorEventAt;
+  DateTime? _lastCloudSyncAt;
+  int _lastCloudSyncedSteps = -1;
+  int _lastNotifiedSteps = -1;
 
   late Function(String date, int steps, int newBaseRaw) _onNewDay;
 
@@ -80,6 +88,10 @@ class StepService extends ChangeNotifier {
     _onNewDay = onNewDay;
     _cloudEnabled = cloudEnabled;
     _todayKey = _todayString();
+    _lastSensorEventAt = null;
+    _lastCloudSyncAt = null;
+    _lastCloudSyncedSteps = -1;
+    _lastNotifiedSteps = -1;
 
     await _ensureUserDoc();
 
@@ -106,9 +118,13 @@ class StepService extends ChangeNotifier {
   Future<void> updateUserContext({
     required String userId,
     required int goalSteps,
+    bool? cloudEnabled,
   }) async {
     _userId = userId;
     _goalSteps = goalSteps;
+    if (cloudEnabled != null) {
+      _cloudEnabled = cloudEnabled;
+    }
     await _ensureUserDoc();
     await _syncLiveDataToFirestore();
     notifyListeners();
@@ -204,7 +220,33 @@ class StepService extends ChangeNotifier {
 
     _sub = Pedometer.stepCountStream.listen(
       (StepCount event) {
-        _rawTotal = event.steps;
+        final now = DateTime.now();
+        final incomingRaw = event.steps;
+
+        // Handle device reboot / sensor counter reset while preserving today's progress.
+        if (_rawTotal > 0 && incomingRaw < _rawTotal) {
+          final carriedToday = stepsToday;
+          _baseSteps = incomingRaw - carriedToday;
+        }
+
+        // Filter impossible spikes from noisy sensor streams.
+        if (_rawTotal > 0 && incomingRaw > _rawTotal && _lastSensorEventAt != null) {
+          final elapsedMs = now
+              .difference(_lastSensorEventAt!)
+              .inMilliseconds
+              .clamp(1, 3600000);
+          final delta = incomingRaw - _rawTotal;
+          final maxExpectedDelta =
+              ((elapsedMs / 1000.0) * _maxExpectedStepsPerSecond).ceil() + 25;
+          if (delta > maxExpectedDelta) {
+            debugPrint('Ignoring noisy sensor spike: +$delta steps in ${elapsedMs}ms');
+            _lastSensorEventAt = now;
+            return;
+          }
+        }
+
+        _lastSensorEventAt = now;
+        _rawTotal = incomingRaw;
 
         if (_pendingInitialRollover) {
           final previousDaySteps = (event.steps - _pendingSavedBase).clamp(0, 999999);
@@ -225,8 +267,13 @@ class StepService extends ChangeNotifier {
         }
 
         if (_baseSteps == 0) _baseSteps = event.steps;
-        unawaited(_syncLiveDataToFirestore());
-        notifyListeners();
+        unawaited(_syncLiveDataToFirestoreThrottled());
+
+        final currentToday = stepsToday;
+        if (currentToday != _lastNotifiedSteps) {
+          _lastNotifiedSteps = currentToday;
+          notifyListeners();
+        }
       },
       onError: (error) {
         _available = false;
@@ -272,6 +319,32 @@ class StepService extends ChangeNotifier {
       },
       SetOptions(merge: true),
     );
+  }
+
+  Future<void> _syncLiveDataToFirestoreThrottled() async {
+    if (!_cloudEnabled) return;
+
+    final now = DateTime.now();
+    final today = stepsToday;
+    final elapsedSinceLastSync =
+        _lastCloudSyncAt == null ? null : now.difference(_lastCloudSyncAt!);
+    final stepDelta = _lastCloudSyncedSteps < 0
+        ? today
+        : (today - _lastCloudSyncedSteps).abs();
+
+    final shouldSync = _lastCloudSyncAt == null ||
+        elapsedSinceLastSync!.inSeconds >= _cloudSyncIntervalSeconds ||
+        stepDelta >= _cloudSyncStepDelta;
+    if (!shouldSync) return;
+
+    try {
+      await _syncLiveDataToFirestore();
+      _lastCloudSyncAt = now;
+      _lastCloudSyncedSteps = today;
+    } catch (err, stack) {
+      debugPrint('Live step sync failed: $err');
+      debugPrintStack(stackTrace: stack);
+    }
   }
 
   Future<void> _saveHistoryToFirestore(String date, int steps) async {

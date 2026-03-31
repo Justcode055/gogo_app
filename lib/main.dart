@@ -76,10 +76,15 @@ class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
+        foregroundColor: AppConstants.brandTextPrimary,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: textTheme.titleLarge,
+        iconTheme: const IconThemeData(color: AppConstants.brandTextPrimary),
+        actionsIconTheme: const IconThemeData(color: AppConstants.brandTextPrimary),
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          color: AppConstants.brandTextPrimary,
+        ),
       ),
       cardTheme: CardThemeData(
         color: Colors.white,
@@ -150,10 +155,16 @@ class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,

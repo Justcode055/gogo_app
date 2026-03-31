@@ -8,6 +8,7 @@ class StorageService {
   static const _historyKey = 'step_history';
   static const _onboardedKey = 'onboarded';
   static const _privacyConsentKey = 'privacy_consent';
+  static const _keepSignedInKey = 'keep_signed_in';
   static const _userIdKey = 'app_user_id';
   static const _todayBaseKey = 'today_base_steps';
   static const _todayDateKey = 'today_date';
@@ -55,6 +56,16 @@ class StorageService {
   Future<void> setPrivacyConsent(bool value) async {
     final p = await _prefs;
     await p.setBool(_privacyConsentKey, value);
+  }
+
+  Future<bool> getKeepSignedIn() async {
+    final p = await _prefs;
+    return p.getBool(_keepSignedInKey) ?? true;
+  }
+
+  Future<void> setKeepSignedIn(bool value) async {
+    final p = await _prefs;
+    await p.setBool(_keepSignedInKey, value);
   }
 
   Future<String> getOrCreateUserId() async {
@@ -112,6 +123,7 @@ class StorageService {
     await p.setBool(_darkModeKey, false);
     await p.setBool(_onboardedKey, false);
     await p.setBool(_privacyConsentKey, false);
+    await p.setBool(_keepSignedInKey, true);
     return newUserId;
   }
 }

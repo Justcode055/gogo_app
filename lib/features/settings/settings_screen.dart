@@ -71,6 +71,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     context.go('/');
   }
 
+  Future<void> _signOut() async {
+    await AppState.instance.signOut();
+    if (!mounted) return;
+    context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -153,6 +159,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const _SectionHeader(title: 'Account'),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.logout, color: AppConstants.brandWarning),
+                  title: const Text('Sign out'),
+                  subtitle: const Text(
+                    'Log out of this device',
+                    style: TextStyle(color: AppConstants.brandTextMuted),
+                  ),
+                  onTap: _signOut,
                 ),
               ),
               const SizedBox(height: 16),
