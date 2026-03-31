@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../../core/app_constants.dart';
 import '../../core/app_state.dart';
-import '../../services/step_service.dart';
 
 class HomeDashboardScreen extends StatelessWidget {
   const HomeDashboardScreen({super.key});
@@ -16,6 +15,8 @@ class HomeDashboardScreen extends StatelessWidget {
         final steps = AppState.instance.todaySteps;
         final goal = AppState.instance.goalSteps;
         final available = AppState.instance.stepsAvailable;
+        final safeGoal = goal <= 0 ? 1 : goal;
+        final percent = (steps / safeGoal).clamp(0.0, 1.0);
 
         return Scaffold(
           appBar: AppBar(
@@ -37,119 +38,78 @@ class HomeDashboardScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 16),
-                  StreamBuilder<int>(
-                    stream: StepService.instance.liveStepsStream,
-                    initialData: steps,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final liveSteps = snapshot.data ?? steps;
-                      final safeGoal = goal <= 0 ? 1 : goal;
-                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
-
-                      return DailyProgressRing(
-                        available: available,
-                        steps: liveSteps,
-                        percent: percent,
-                      );
-                    },
+                  DailyProgressRing(
+                    available: available,
+                    steps: steps,
+                    percent: percent,
                   ),
                   const SizedBox(height: 28),
-                  StreamBuilder<int>(
-                    stream: StepService.instance.liveStepsStream,
-                    initialData: steps,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final liveSteps = snapshot.data ?? steps;
-                      final safeGoal = goal <= 0 ? 1 : goal;
-                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
-                      return Row(
-                        children: [
-                          _StatCard(
-                            icon: Icons.my_location,
-                            label: 'Goal',
-                            value: '$goal',
-                            unit: 'steps',
-                            color: Colors.blue,
-                          ),
-                          const SizedBox(width: 12),
-                          _StatCard(
-                            icon: Icons.check_circle_outline,
-                            label: 'Done',
-                            value: '${(percent * 100).toStringAsFixed(0)}%',
-                            unit: 'of goal',
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 12),
-                          _StatCard(
-                            icon: Icons.local_fire_department,
-                            label: 'Calories',
-                            value: (liveSteps * 0.04).toStringAsFixed(0),
-                            unit: 'kcal',
-                            color: Colors.orange,
-                          ),
-                        ],
-                      );
-                    },
+                  Row(
+                    children: [
+                      _StatCard(
+                        icon: Icons.my_location,
+                        label: 'Goal',
+                        value: '$goal',
+                        unit: 'steps',
+                        color: AppConstants.brandTextPrimary,
+                      ),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                        icon: Icons.check_circle_outline,
+                        label: 'Done',
+                        value: '${(percent * 100).toStringAsFixed(0)}%',
+                        unit: 'of goal',
+                        color: AppConstants.brandPrimary,
+                      ),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                        icon: Icons.local_fire_department,
+                        label: 'Calories',
+                        value: (steps * 0.04).toStringAsFixed(0),
+                        unit: 'kcal',
+                        color: AppConstants.brandWarning,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 24),
-                  StreamBuilder<int>(
-                    stream: StepService.instance.liveStepsStream,
-                    initialData: steps,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final liveSteps = snapshot.data ?? steps;
-                      final safeGoal = goal <= 0 ? 1 : goal;
-                      final percent = (liveSteps / safeGoal).clamp(0.0, 1.0);
-                      return Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF39D98A),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: AppConstants.onboardingAccent,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppConstants.brandPrimary,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppConstants.brandPrimary,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.emoji_events, color: Colors.amber),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _motivationalText(percent),
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: AppConstants.onboardingDarkBg),
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.emoji_events, color: Colors.amber),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _motivationalText(percent),
-                                style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppConstants.onboardingDarkBg),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                   if (!available) ...[
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.amber.shade50,
+                        color: AppConstants.brandSurface,
                         borderRadius: BorderRadius.circular(10),
-                        border:
-                            Border.all(color: Colors.amber.shade300),
+                        border: Border.all(color: AppConstants.brandWarning),
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.info_outline, color: Colors.amber),
+                          Icon(Icons.info_outline, color: AppConstants.brandWarning),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -188,10 +148,10 @@ class HomeDashboardScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => context.go('/home/history'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppConstants.onboardingAccent,
+                        backgroundColor: AppConstants.brandPrimary,
                         foregroundColor: AppConstants.onboardingDarkBg,
                         side: const BorderSide(
-                          color: AppConstants.onboardingAccent,
+                          color: AppConstants.brandPrimary,
                           width: 1.2,
                         ),
                         elevation: 1,
@@ -243,10 +203,10 @@ class _StatCard extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF39D98A),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppConstants.onboardingAccent,
+            color: AppConstants.brandSurfaceAlt,
           ),
         ),
         child: Column(
@@ -291,10 +251,10 @@ class DailyProgressRing extends StatelessWidget {
         width: 188,
         height: 188,
         decoration: BoxDecoration(
-          color: const Color(0xFF39D98A),
+          color: AppConstants.brandPrimary,
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppConstants.onboardingAccent,
+            color: AppConstants.brandPrimary,
             width: 2,
           ),
         ),
@@ -319,8 +279,8 @@ class DailyProgressRing extends StatelessWidget {
           ],
         ),
       ),
-      progressColor: AppConstants.onboardingAccent,
-      backgroundColor: const Color(0xFFB8F2D2),
+      progressColor: AppConstants.brandPrimary,
+      backgroundColor: AppConstants.brandSurfaceAlt,
       circularStrokeCap: CircularStrokeCap.round,
       animation: true,
       animateFromLastPercent: true,

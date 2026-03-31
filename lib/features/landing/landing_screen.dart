@@ -13,7 +13,7 @@ class LandingScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFE8F5E9), Colors.white],
+            colors: [AppConstants.brandSurface, Colors.white],
           ),
         ),
         child: SafeArea(
@@ -30,10 +30,10 @@ class LandingScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.green.shade100),
+                      border: Border.all(color: AppConstants.brandSurfaceAlt),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.green.withValues(alpha: 0.15),
+                          color: AppConstants.brandPrimary.withValues(alpha: 0.18),
                           blurRadius: 28,
                           offset: const Offset(0, 12),
                         ),
@@ -61,7 +61,7 @@ class LandingScreen extends StatelessWidget {
                   'A simple way to build healthy walking habits every day.',
                   style: TextStyle(
                     fontSize: 17,
-                    color: Colors.black87,
+                    color: AppConstants.brandTextPrimary,
                     height: 1.4,
                   ),
                 ),
@@ -71,11 +71,11 @@ class LandingScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.green.shade100),
+                    border: Border.all(color: AppConstants.brandSurfaceAlt),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.track_changes, color: Colors.green),
+                      Icon(Icons.track_changes, color: AppConstants.brandPrimary),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(

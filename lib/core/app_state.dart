@@ -91,14 +91,23 @@ class AppState extends ChangeNotifier {
 
   // ── Goal ──────────────────────────────────────────────
   Future<void> updateGoal(int goal) async {
-    goalSteps = goal;
-    await _storage.saveGoal(goal);
-    try {
-      await StepService.instance.syncGoal(goal);
-    } catch (err, stack) {
-      debugPrint('Goal cloud sync failed: $err');
-      debugPrintStack(stackTrace: stack);
-    }
+    final safeGoal = goal.clamp(
+      AppConstants.minDailyGoal,
+      AppConstants.maxDailyGoal,
+    );
+
+    await _storage.saveGoal(safeGoal);
+    final persistedGoal = await _storage.getGoal();
+    goalSteps = persistedGoal;
+
+    // Keep UI responsive: local persistence is authoritative, cloud sync is best-effort.
+    unawaited(
+      StepService.instance.syncGoal(persistedGoal).catchError((Object err, StackTrace stack) {
+        debugPrint('Goal cloud sync failed: $err');
+        debugPrintStack(stackTrace: stack);
+      }),
+    );
+
     notifyListeners();
   }
 

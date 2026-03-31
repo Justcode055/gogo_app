@@ -13,6 +13,7 @@ class GoalSettingScreen extends StatefulWidget {
 class _GoalSettingScreenState extends State<GoalSettingScreen> {
   late TextEditingController _controller;
   final _formKey = GlobalKey<FormState>();
+  bool _isSaving = false;
 
   // Preset quick-select options
   static const _presets = AppConstants.goalPresets;
@@ -31,22 +32,39 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
   }
 
   Future<void> _save() async {
+    if (_isSaving) return;
     if (!_formKey.currentState!.validate()) return;
-    final goal = int.parse(_controller.text.trim());
-    await AppState.instance.updateGoal(goal);
-    if (mounted) {
+
+    final raw = _controller.text;
+    final sanitized = raw.replaceAll(RegExp(r'[^0-9]'), '');
+    final goal = int.parse(sanitized);
+
+    setState(() => _isSaving = true);
+    try {
+      await AppState.instance.updateGoal(goal);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Goal saved! 🎯'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppConstants.brandPrimary,
         ),
       );
       context.pop();
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final chipBg = isDark
+        ? AppConstants.onboardingSurface
+        : AppConstants.brandPrimary;
+    final chipFg = isDark
+        ? AppConstants.onboardingTextPrimary
+        : Colors.white;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Set Daily Goal')),
       body: SafeArea(
@@ -65,7 +83,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                 const SizedBox(height: 8),
                 const Text(
                   'The recommended daily goal is ${AppConstants.defaultDailyGoal} steps.',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: AppConstants.brandTextMuted),
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -78,7 +96,9 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                     prefixIcon: Icon(Icons.directions_walk),
                   ),
                   validator: (val) {
-                    final n = int.tryParse(val?.trim() ?? '');
+                    final sanitized =
+                        (val ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                    final n = int.tryParse(sanitized);
                     if (n == null || n < AppConstants.minDailyGoal) {
                       return 'Please enter a valid number (min ${AppConstants.minDailyGoal})';
                     }
@@ -92,20 +112,30 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                 const Text('Quick select:',
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey)),
+                    color: AppConstants.brandTextMuted)),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
+                  runSpacing: 10,
                   children: _presets.map((p) {
                     return ActionChip(
+                      avatar: Icon(
+                        Icons.bolt,
+                        size: 16,
+                        color: chipFg,
+                      ),
                       label: Text(
                           p >= 1000
                               ? '${p ~/ 1000}k'
                               : '$p',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold)),
-                      backgroundColor: Colors.green.shade50,
-                      side: BorderSide(color: Colors.green.shade300),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: chipFg,
+                          )),
+                      backgroundColor: chipBg,
+                      side: BorderSide(color: chipBg),
+                      elevation: 0,
+                      pressElevation: 0,
                       onPressed: () =>
                           _controller.text = '$p',
                     );
@@ -116,15 +146,17 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: _save,
+                    onPressed: _isSaving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppConstants.brandPrimary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Save Goal',
-                        style: TextStyle(fontSize: 18)),
+                    child: Text(
+                      _isSaving ? 'Saving...' : 'Save Goal',
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ],

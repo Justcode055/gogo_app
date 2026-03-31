@@ -53,7 +53,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 FilledButton(
                   onPressed: () => Navigator.of(dialogContext).pop(true),
-                  style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppConstants.brandDanger,
+                  ),
                   child: const Text('Delete'),
                 ),
               ],
@@ -87,12 +89,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: SwitchListTile(
                   secondary: Icon(
                     isDark ? Icons.dark_mode : Icons.light_mode,
-                    color: isDark ? Colors.indigo : Colors.amber,
+                    color: isDark
+                        ? AppConstants.onboardingTextSecondary
+                        : AppConstants.brandWarning,
                   ),
                   title: const Text('Dark Mode'),
-                  subtitle: Text(isDark ? 'Dark theme on' : 'Light theme on'),
+                  subtitle: Text(
+                    isDark ? 'Dark theme on' : 'Light theme on',
+                    style: const TextStyle(color: AppConstants.brandTextMuted),
+                  ),
                   value: isDark,
-                  activeThumbColor: Colors.green,
+                  activeThumbColor: AppConstants.brandPrimary,
                   onChanged: (_) => AppState.instance.toggleDarkMode(),
                 ),
               ),
@@ -140,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           alignment: Alignment.centerRight,
                           child: FilledButton(
                             onPressed: _saveGoal,
-                            child: const Text('Save Goal'),
+                            child: const Text('Save goal'),
                           ),
                         ),
                       ],
@@ -155,19 +162,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.verified_user, color: Colors.teal),
+                      leading: const Icon(
+                        Icons.verified_user,
+                        color: AppConstants.brandPrimary,
+                      ),
                       title: const Text('Privacy Consent'),
                       subtitle: Text(
                         AppState.instance.hasPrivacyConsent
                             ? 'Consent granted'
                             : 'Consent not granted',
+                        style: const TextStyle(color: AppConstants.brandTextMuted),
                       ),
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.delete_forever, color: Colors.red),
+                      leading: const Icon(
+                        Icons.delete_forever,
+                        color: AppConstants.brandDanger,
+                      ),
                       title: const Text('Delete Account & Data'),
-                      subtitle: const Text('Remove all Firestore and local data'),
+                      subtitle: const Text(
+                        'Remove all Firestore and local data',
+                        style: TextStyle(color: AppConstants.brandTextMuted),
+                      ),
                       onTap: _deleteAccount,
                     ),
                   ],
@@ -180,16 +197,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.info_outline,
-                          color: Colors.blue),
+                      leading: const Icon(
+                        Icons.info_outline,
+                        color: AppConstants.brandPrimary,
+                      ),
                       title: const Text('Version'),
                       trailing: const Text('1.0.0',
-                          style: TextStyle(color: Colors.grey)),
+                          style: TextStyle(color: AppConstants.brandTextMuted)),
                     ),
                     const Divider(height: 1),
                     ListTile(
                       leading:
-                          const Icon(Icons.directions_walk, color: Colors.green),
+                          const Icon(Icons.directions_walk, color: AppConstants.brandPrimary),
                       title: const Text('GoGo Step Tracker'),
                       subtitle: const Text(
                           'Stay active, reach your goals!'),
@@ -212,14 +231,14 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 4, bottom: 10),
       child: Text(
-        title.toUpperCase(),
+        title,
         style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
           color: Theme.of(context).colorScheme.primary,
-          letterSpacing: 1.2,
+          letterSpacing: 0.4,
         ),
       ),
     );

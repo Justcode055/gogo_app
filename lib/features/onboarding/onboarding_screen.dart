@@ -31,7 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0x5500C896),
+                      color: AppConstants.onboardingAccent.withValues(alpha: 0.35),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -66,7 +66,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 value: _acceptedPrivacy,
                 contentPadding: EdgeInsets.zero,
                 activeColor: AppConstants.onboardingAccent,
-                checkColor: AppConstants.onboardingDarkBg,
+                checkColor: AppConstants.onboardingTextPrimary,
                 onChanged: (value) {
                   setState(() {
                     _acceptedPrivacy = value ?? false;
@@ -74,7 +74,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 title: const Text(
                   'I agree to the Privacy Policy and consent to step data processing.',
-                  style: TextStyle(fontSize: 13, color: Color(0xFFD6E4E2)),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppConstants.onboardingTextSecondary,
+                  ),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -85,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppConstants.onboardingAccent,
-                    foregroundColor: AppConstants.onboardingDarkBg,
+                    foregroundColor: AppConstants.onboardingTextPrimary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                   ),
