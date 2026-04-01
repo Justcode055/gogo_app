@@ -149,51 +149,82 @@ class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
     );
     final textTheme = Typography.material2021()
         .white
-        .apply(fontFamily: 'serif');
+        .apply(
+          fontFamily: 'serif',
+          bodyColor: AppConstants.onboardingTextPrimary,
+          displayColor: AppConstants.onboardingTextPrimary,
+        )
+        .copyWith(
+          titleLarge: const TextStyle(
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
+            color: AppConstants.onboardingTextPrimary,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 15,
+            height: 1.35,
+            color: AppConstants.onboardingTextPrimary,
+          ),
+        );
 
     return base.copyWith(
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
+        foregroundColor: AppConstants.onboardingTextPrimary,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actionsIconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppConstants.onboardingTextPrimary),
+        actionsIconTheme: const IconThemeData(color: AppConstants.onboardingTextPrimary),
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
-          color: Colors.white,
+          color: AppConstants.onboardingTextPrimary,
         ),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFF2D3E35)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
+        fillColor: const Color(0xFF1A2620),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF2D3E35)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF2D3E35)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppConstants.brandPrimary, width: 1.5),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
+        backgroundColor: AppConstants.brandPrimaryDark,
+        contentTextStyle: TextStyle(color: AppConstants.onboardingTextPrimary),
       ),
     );
   }
