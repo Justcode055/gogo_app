@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -8,8 +11,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace = "com.example.gogo_app_v2"
+    namespace = "com.heinzaw.gogo_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,13 +28,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
+}
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.gogo_app_v2"
+        applicationId = "com.heinzaw.gogo_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -33,11 +45,23 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+    signingConfigs {
+    create("release") {
+        keyAlias = keystoreProperties["keyAlias"] as String
+        keyPassword = keystoreProperties["keyPassword"] as String
+        storeFile = file(keystoreProperties["storeFile"] as String)
+        storePassword = keystoreProperties["storePassword"] as String
+    }
+}
+
+     buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+
+            // ✅ Correct syntax in Kotlin DSL
+            isShrinkResources = false
+
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

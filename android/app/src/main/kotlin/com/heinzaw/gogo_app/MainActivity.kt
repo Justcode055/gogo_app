@@ -1,4 +1,4 @@
-package com.example.gogo_app_v2
+package com.heinzaw.gogo_app
 
 import io.flutter.embedding.android.FlutterActivity
 

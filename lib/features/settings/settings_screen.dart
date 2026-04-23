@@ -83,6 +83,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       listenable: AppState.instance,
       builder: (context, _) {
         final isDark = AppState.instance.isDarkMode;
+        final email = AppState.instance.userEmail.isNotEmpty
+            ? AppState.instance.userEmail
+            : 'Not signed in';
+        final uid = AppState.instance.userId;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Settings')),
@@ -163,6 +167,158 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 16),
               const _SectionHeader(title: 'Account'),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Email Section
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppConstants.brandPrimary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.mail_outline,
+                              color: AppConstants.brandPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Email Address',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppConstants.brandTextMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  email,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
+                      const SizedBox(height: 16),
+                      // User ID Section
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppConstants.onboardingTextSecondary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.badge_outlined,
+                              color: AppConstants.onboardingTextSecondary,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'User ID',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppConstants.brandTextMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  uid.length > 16 ? '${uid.substring(0, 16)}...' : uid,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'monospace',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(height: 1),
+                      const SizedBox(height: 16),
+                      // Session Status
+                      Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppState.instance.keepSignedIn
+                                  ? AppConstants.brandGreenDark.withValues(alpha: 0.12)
+                                  : AppConstants.brandWarning.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              AppState.instance.keepSignedIn
+                                  ? Icons.check_circle_outline
+                                  : Icons.schedule,
+                              color: AppState.instance.keepSignedIn
+                                  ? AppConstants.brandGreenDark
+                                  : AppConstants.brandWarning,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Session',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppConstants.brandTextMuted,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  AppState.instance.keepSignedIn
+                                      ? 'Signed in on this device'
+                                      : 'Session expires on logout',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppState.instance.keepSignedIn
+                                        ? AppConstants.brandGreenDark
+                                        : AppConstants.brandWarning,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.logout, color: AppConstants.brandWarning),

@@ -15,6 +15,7 @@ class HomeDashboardScreen extends StatelessWidget {
         final steps = AppState.instance.todaySteps;
         final goal = AppState.instance.goalSteps;
         final available = AppState.instance.stepsAvailable;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         final safeGoal = goal <= 0 ? 1 : goal;
         final percent = (steps / safeGoal).clamp(0.0, 1.0);
 
@@ -103,18 +104,32 @@ class HomeDashboardScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppConstants.brandSurface,
+                        color: isDark ? const Color(0xFF25332C) : AppConstants.brandSurface,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppConstants.brandWarning),
+                        border: Border.all(
+                          color: isDark
+                              ? AppConstants.onboardingTextSecondary
+                              : AppConstants.brandWarning,
+                        ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(Icons.info_outline, color: AppConstants.brandWarning),
-                          SizedBox(width: 8),
+                          Icon(
+                            Icons.info_outline,
+                            color: isDark
+                                ? AppConstants.onboardingTextPrimary
+                                : AppConstants.brandWarning,
+                          ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Step counting unavailable on this device or permission denied.',
-                              style: TextStyle(fontSize: 13),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark
+                                    ? AppConstants.onboardingTextPrimary
+                                    : AppConstants.brandTextPrimary,
+                              ),
                             ),
                           ),
                         ],

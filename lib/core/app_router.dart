@@ -11,7 +11,13 @@ import '../features/shell/main_shell.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
+  refreshListenable: AppState.instance,
   redirect: (context, state) {
+    // Show splash while initializing
+    if (!AppState.instance.isInitialized) {
+      return '/';
+    }
+
     final loggedIn = AppState.instance.isLoggedIn;
     final onboarded = AppState.instance.isOnboarded;
     final path = state.uri.path;
@@ -20,7 +26,16 @@ final appRouter = GoRouter(
     final atOnboarding = path == '/onboarding';
     final isPublic = atLanding || atLogin || atOnboarding;
 
-    if (!loggedIn && path != '/login') return '/login';
+    // Keep landing as the first stop for signed-out users.
+    if (!loggedIn) {
+      if (atLanding) return null;
+      if (atLogin) {
+        final fromLanding = state.uri.queryParameters['from'] == 'landing';
+        return fromLanding ? null : '/';
+      }
+      return '/';
+    }
+
     if (loggedIn && atLogin) {
       return onboarded ? '/home/dashboard' : '/onboarding';
     }
@@ -30,14 +45,8 @@ final appRouter = GoRouter(
     return null;
   },
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const LandingScreen(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const LandingScreen()),
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),

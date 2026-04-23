@@ -20,10 +20,13 @@ class AppState extends ChangeNotifier {
   bool hasPrivacyConsent = false;
   bool isLoggedIn = false;
   bool keepSignedIn = true;
+  bool isInitialized = false;
   String userId = '';
+  String userEmail = '';
   List<StepEntry> history = [];
   int _lastPersistedBase = 0;
   bool _cloudEnabled = false;
+  StreamSubscription<User?>? _authSubscription;
 
   // ── Initialization ────────────────────────────────────
   Future<void> init({bool cloudEnabled = true}) async {
@@ -33,7 +36,7 @@ class AppState extends ChangeNotifier {
     isOnboarded = await _storage.isOnboarded();
     hasPrivacyConsent = await _storage.getPrivacyConsent();
     keepSignedIn = await _storage.getKeepSignedIn();
-    userId = await _resolveRuntimeUserId(cloudEnabled: cloudEnabled);
+    userId = await _storage.getOrCreateUserId();
     history = await _storage.getHistory();
 
     final savedBase = await _storage.getTodayBase();
@@ -50,35 +53,71 @@ class AppState extends ChangeNotifier {
     );
 
     StepService.instance.addListener(_onStepUpdate);
+    
+    // Resolve Firebase auth state asynchronously (non-blocking)
+    _resolveFirebaseAuthState();
+    
+    isInitialized = true;
     notifyListeners();
   }
 
-  Future<String> _resolveRuntimeUserId({required bool cloudEnabled}) async {
-    final localId = await _storage.getOrCreateUserId();
-    if (!cloudEnabled) return localId;
+  /// Listen to Firebase auth state changes without blocking init
+  void _resolveFirebaseAuthState() {
+    if (!_cloudEnabled) return;
 
     try {
       final auth = FirebaseAuth.instance;
-      if (!keepSignedIn && auth.currentUser != null) {
-        await auth.signOut();
-        isLoggedIn = false;
-        return localId;
-      }
-
+      
+      // Check current user immediately
       final currentUser = auth.currentUser;
-      final uid = currentUser?.uid;
-      if (uid == null || uid.isEmpty) {
-        isLoggedIn = false;
-        return localId;
+      if (currentUser != null && currentUser.uid.isNotEmpty) {
+        if (keepSignedIn) {
+          isLoggedIn = true;
+          userId = currentUser.uid;
+          userEmail = currentUser.email ?? '';
+          StepService.instance.updateUserContext(
+            userId: currentUser.uid,
+            goalSteps: goalSteps,
+            cloudEnabled: true,
+          );
+          notifyListeners();
+          return;
+        } else {
+          // User exists but shouldn't stay logged in
+          unawaited(auth.signOut());
+          isLoggedIn = false;
+          notifyListeners();
+          return;
+        }
       }
-
-      isLoggedIn = true;
-      return uid;
+      
+      // Listen for future auth state changes
+      _authSubscription?.cancel();
+      _authSubscription = auth.authStateChanges().listen((User? user) {
+        if (user != null && user.uid.isNotEmpty && keepSignedIn) {
+          if (!isLoggedIn) {
+            isLoggedIn = true;
+            userId = user.uid;
+            userEmail = user.email ?? '';
+            StepService.instance.updateUserContext(
+              userId: user.uid,
+              goalSteps: goalSteps,
+              cloudEnabled: true,
+            );
+            notifyListeners();
+          }
+        } else {
+          if (isLoggedIn) {
+            isLoggedIn = false;
+            notifyListeners();
+          }
+        }
+      });
     } catch (err, stack) {
-      debugPrint('Auth check failed, fallback to local user id: $err');
+      debugPrint('Auth state init failed: $err');
       debugPrintStack(stackTrace: stack);
       isLoggedIn = false;
-      return localId;
+      notifyListeners();
     }
   }
 
@@ -104,6 +143,7 @@ class AppState extends ChangeNotifier {
 
       isLoggedIn = true;
       userId = uid;
+      userEmail = email;
       await StepService.instance.updateUserContext(
         userId: uid,
         goalSteps: goalSteps,
@@ -140,6 +180,7 @@ class AppState extends ChangeNotifier {
 
       isLoggedIn = true;
       userId = uid;
+      userEmail = email;
       await StepService.instance.updateUserContext(
         userId: uid,
         goalSteps: goalSteps,
@@ -179,6 +220,7 @@ class AppState extends ChangeNotifier {
     final localId = await _storage.getOrCreateUserId();
     isLoggedIn = false;
     userId = localId;
+    userEmail = '';
     keepSignedIn = false;
     await _storage.setKeepSignedIn(false);
     await StepService.instance.updateUserContext(
@@ -278,6 +320,7 @@ class AppState extends ChangeNotifier {
     isOnboarded = false;
     hasPrivacyConsent = false;
     isLoggedIn = false;
+    userEmail = '';
     history = [];
     userId = freshUserId;
 
@@ -300,6 +343,12 @@ class AppState extends ChangeNotifier {
   static String _todayString() {
     final n = DateTime.now();
     return '${n.year}-${n.month.toString().padLeft(2, '0')}-${n.day.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   String _mapAuthError(FirebaseAuthException err, {required String fallback}) {

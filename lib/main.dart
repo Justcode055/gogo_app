@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'core/app_constants.dart';
 import 'core/app_state.dart';
@@ -44,6 +45,107 @@ class GoGoApp extends StatefulWidget {
 }
 
 class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
+  TextTheme _buildPremiumTextTheme({
+    required Brightness brightness,
+    required Color textColor,
+  }) {
+    final baseTypography = brightness == Brightness.dark
+        ? Typography.material2021().white
+        : Typography.material2021().black;
+
+    final bodyTheme = GoogleFonts.manropeTextTheme(baseTypography).apply(
+      bodyColor: textColor,
+      displayColor: textColor,
+    );
+
+    return bodyTheme.copyWith(
+      displayLarge: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.displayLarge,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      displayMedium: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.displayMedium,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      displaySmall: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.displaySmall,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      headlineLarge: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.headlineLarge,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      headlineMedium: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.headlineMedium,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      headlineSmall: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.headlineSmall,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      titleLarge: GoogleFonts.cormorantGaramond(
+        textStyle: bodyTheme.titleLarge,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+        color: textColor,
+      ),
+      titleMedium: GoogleFonts.manrope(
+        textStyle: bodyTheme.titleMedium,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      titleSmall: GoogleFonts.manrope(
+        textStyle: bodyTheme.titleSmall,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      bodyLarge: GoogleFonts.manrope(
+        textStyle: bodyTheme.bodyLarge,
+        fontSize: 16,
+        height: 1.35,
+        color: textColor,
+      ),
+      bodyMedium: GoogleFonts.manrope(
+        textStyle: bodyTheme.bodyMedium,
+        fontSize: 15,
+        height: 1.35,
+        color: textColor,
+      ),
+      bodySmall: GoogleFonts.manrope(
+        textStyle: bodyTheme.bodySmall,
+        height: 1.35,
+        color: textColor,
+      ),
+      labelLarge: GoogleFonts.manrope(
+        textStyle: bodyTheme.labelLarge,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      labelMedium: GoogleFonts.manrope(
+        textStyle: bodyTheme.labelMedium,
+        fontWeight: FontWeight.w500,
+        color: textColor,
+      ),
+      labelSmall: GoogleFonts.manrope(
+        textStyle: bodyTheme.labelSmall,
+        fontWeight: FontWeight.w500,
+        color: textColor,
+      ),
+    );
+  }
+
   ThemeData _buildLightTheme() {
     final scheme = ColorScheme.fromSeed(
       seedColor: AppConstants.brandPrimary,
@@ -54,23 +156,10 @@ class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
       scaffoldBackgroundColor: AppConstants.brandSurface,
       useMaterial3: true,
     );
-    final textTheme = Typography.material2021()
-        .black
-        .apply(
-          fontFamily: 'serif',
-          bodyColor: AppConstants.brandTextPrimary,
-          displayColor: AppConstants.brandTextPrimary,
-        )
-        .copyWith(
-          titleLarge: const TextStyle(
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.2,
-          ),
-          bodyMedium: const TextStyle(
-            fontSize: 15,
-            height: 1.35,
-          ),
-        );
+    final textTheme = _buildPremiumTextTheme(
+      brightness: Brightness.light,
+      textColor: AppConstants.brandTextPrimary,
+    );
 
     return base.copyWith(
       textTheme: textTheme,
@@ -147,25 +236,10 @@ class _GoGoAppState extends State<GoGoApp> with WidgetsBindingObserver {
       colorScheme: scheme,
       useMaterial3: true,
     );
-    final textTheme = Typography.material2021()
-        .white
-        .apply(
-          fontFamily: 'serif',
-          bodyColor: AppConstants.onboardingTextPrimary,
-          displayColor: AppConstants.onboardingTextPrimary,
-        )
-        .copyWith(
-          titleLarge: const TextStyle(
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.2,
-            color: AppConstants.onboardingTextPrimary,
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 15,
-            height: 1.35,
-            color: AppConstants.onboardingTextPrimary,
-          ),
-        );
+    final textTheme = _buildPremiumTextTheme(
+      brightness: Brightness.dark,
+      textColor: AppConstants.onboardingTextPrimary,
+    );
 
     return base.copyWith(
       textTheme: textTheme,

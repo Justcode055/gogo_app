@@ -53,12 +53,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Track your daily steps,\nreach your goals, stay healthy.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: AppConstants.onboardingTextSecondary,
+                  color: AppConstants.onboardingTextPrimary,
+                  height: 1.4,
                 ),
               ),
               const SizedBox(height: 20),
@@ -67,16 +68,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 contentPadding: EdgeInsets.zero,
                 activeColor: AppConstants.onboardingAccent,
                 checkColor: AppConstants.onboardingTextPrimary,
+                side: BorderSide(
+                  color: AppConstants.onboardingTextPrimary.withValues(alpha: 0.75),
+                  width: 1.4,
+                ),
                 onChanged: (value) {
                   setState(() {
                     _acceptedPrivacy = value ?? false;
                   });
                 },
-                title: const Text(
+                title: Text(
                   'I agree to the Privacy Policy and consent to step data processing.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppConstants.onboardingTextSecondary,
+                    color: AppConstants.onboardingTextPrimary.withValues(alpha: 0.9),
+                    height: 1.35,
                   ),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,

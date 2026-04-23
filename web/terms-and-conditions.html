@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoGo App - Terms and Conditions</title>
+  <style>
+    :root {
+      --bg: #f7f9f8;
+      --surface: #ffffff;
+      --text: #1a2b22;
+      --muted: #5d6f65;
+      --brand: #1f9f63;
+      --brand-dark: #176d45;
+      --border: #d7e3dc;
+      --danger: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:
+        radial-gradient(circle at top right, #e9f7ef 0%, transparent 45%),
+        linear-gradient(180deg, #f5faf7 0%, var(--bg) 100%);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .container {
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      color: #fff;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 14px 34px rgba(23, 109, 69, 0.24);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.93);
+      max-width: 70ch;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+
+    .badge {
+      background: #ecf6f1;
+      border: 1px solid #d2eadd;
+      color: var(--brand-dark);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 18px 4px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(17, 45, 31, 0.06);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      color: #173a2a;
+      font-size: 21px;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    ul {
+      margin: 0 0 14px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 0 0 8px;
+    }
+
+    strong {
+      color: #10261b;
+    }
+
+    .warn {
+      border-left: 4px solid var(--danger);
+      background: #fff5f5;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 10px 0 14px;
+    }
+
+    .foot {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .hero {
+        border-radius: 14px;
+        padding: 22px;
+      }
+
+      .hero h1 {
+        font-size: 25px;
+      }
+
+      .card {
+        padding: 16px 14px 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>GoGo App Terms and Conditions</h1>
+      <p>
+        These Terms and Conditions govern your use of the GoGo step-tracking application,
+        including onboarding, dashboard, goals, history, settings, account features,
+        and related cloud sync functionality.
+      </p>
+    </section>
+
+    <div class="meta">
+      <span class="badge">Updated Date: April 16, 2026</span>
+      <span class="badge">App: GoGo Step Tracker</span>
+      <span class="badge">Version: 1.0.0</span>
+    </div>
+
+    <section class="card">
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        By installing or using GoGo, you agree to these Terms and to our Privacy practices.
+        During onboarding, you are asked to consent before continuing to the main app experience.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>2. What GoGo Provides</h2>
+      <p>GoGo is a personal step-tracking and goal app. Core features include:</p>
+      <ul>
+        <li>Daily step progress visualization on the dashboard.</li>
+        <li>Step history view for previous days.</li>
+        <li>Configurable daily step goals.</li>
+        <li>Optional user account sign-in and cloud-backed sync when available.</li>
+      </ul>
+      <p>
+        GoGo is designed for wellness tracking and is not intended for medical diagnosis,
+        treatment, or emergency use.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>3. Permissions and Device Data</h2>
+      <p>
+        To calculate your steps, GoGo may request activity recognition or equivalent motion
+        permission from your device. If permission is denied, some step-tracking functions
+        may not be available.
+      </p>
+      <p>
+        Step counts depend on device sensors and operating system services and may be delayed,
+        estimated, or inaccurate in some conditions.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>4. Account, Authentication, and Session</h2>
+      <p>
+        GoGo may support registration, login, and password reset through Firebase Authentication.
+        You are responsible for maintaining the confidentiality of your account credentials.
+      </p>
+      <ul>
+        <li>You may choose to stay signed in on your device.</li>
+        <li>You can sign out at any time from Settings.</li>
+        <li>
+          If cloud authentication is unavailable, account-dependent features may be limited
+          until service is restored.
+        </li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>5. Data Storage and Sync</h2>
+      <p>GoGo stores and processes data in two places depending on feature use:</p>
+      <ul>
+        <li>
+          <strong>Local device storage:</strong> app preferences (for example dark mode,
+          onboarding/consent status), daily goal, session options, and local step history.
+        </li>
+        <li>
+          <strong>Cloud storage (when signed in):</strong> step totals, goal values,
+          and historical step entries synced through Firebase services.
+        </li>
+      </ul>
+      <p>
+        By using cloud features, you authorize transmission and storage of your app data
+        with Firebase infrastructure used by GoGo.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>6. User Responsibilities</h2>
+      <ul>
+        <li>Use GoGo in compliance with applicable laws and platform policies.</li>
+        <li>Do not attempt to disrupt, reverse engineer, or abuse the app services.</li>
+        <li>Provide accurate account information where required.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>7. Data Deletion and Account Removal</h2>
+      <p>
+        GoGo provides a Delete Account and Data action in Settings.
+      </p>
+      <ul>
+        <li>This action is intended to remove synced Firestore records related to your account.</li>
+        <li>It also clears local app data and resets onboarding/consent state on the device.</li>
+      </ul>
+      <div class="warn">
+        Deletion is intended to be permanent and may not be reversible once completed.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>8. Service Availability and Changes</h2>
+      <p>
+        We may update, suspend, or discontinue parts of GoGo at any time, including cloud-backed
+        capabilities. We may also release updates that modify features, design, or behavior.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>9. Disclaimer of Warranties</h2>
+      <p>
+        GoGo is provided on an "as is" and "as available" basis without warranties of any kind,
+        to the fullest extent permitted by law. We do not guarantee uninterrupted operation,
+        complete accuracy of step metrics, or fitness for a particular purpose.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>10. Limitation of Liability</h2>
+      <p>
+        To the maximum extent permitted by law, GoGo and its operators are not liable for indirect,
+        incidental, special, consequential, or punitive damages arising from use of the app.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>11. Contact</h2>
+      <p>
+        For legal or support questions regarding these Terms, add your contact address below
+        before publishing this file:
+      </p>
+      <p><strong>Contact Email:</strong> example.com</p>
+      <p class="foot">
+        Replace the placeholder email with your real support or legal contact before production release.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
